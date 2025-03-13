@@ -26,6 +26,63 @@ function removeAllGridTiles() {
     document.getElementById("grid").textContent = '';
 }
 
+function tileClicked(e) {
+    let cols = document.querySelectorAll(".col");
+
+    let row = Array.from(this.parentNode.children).indexOf(this);
+    let col = Array.from(cols).indexOf(this.parentNode);
+    // console.log(Array.from(cols));
+    
+    let currentRowNodes = this.parentNode.children
+    // Above tile
+    if (currentRowNodes[row-1]) { // If the row above the selected space exists
+        currentRowNodes[row-1].style.backgroundColor = "Gray";
+
+        // Top left
+        if (cols[col-1]) {
+            cols[col-1].children[row-1].style.backgroundColor = "Gray";
+        }
+
+        // Top right
+        if (cols[col+1]) {
+            cols[col+1].children[row-1].style.backgroundColor = "Gray";
+        }
+    }
+
+    // Below tile
+    if (currentRowNodes[row+1]) { // If the row below the selected space exists
+        currentRowNodes[row+1].style.backgroundColor = "Gray";
+        
+        // Bottom left
+        if (cols[col-1]) {
+            cols[col-1].children[row+1].style.backgroundColor = "Gray";
+        }
+
+        // Bottom right
+        if (cols[col+1]) {
+            cols[col+1].children[row+1].style.backgroundColor = "Gray";
+        }
+    }
+
+    // Left tile
+    if (cols[col-1]) { // If the col to the left of the selected space exists
+        cols[col-1].children[row].style.backgroundColor = "Gray";
+    }
+    
+    // Right tile
+    if (cols[col+1]) { // If the col to the right of the selected space exists
+        cols[col+1].children[row].style.backgroundColor = "Gray";
+    }
+
+    this.style.backgroundColor = "Black";
+    console.log("Tile (", col, ",", row);
+}
+
+function tileFlagged(e) {
+    e.preventDefault()
+    console.log("Tile Flagged ", this);
+}
+
 function populateGrid(gridTitleCountWidth, gridWidth) {
     removeAllGridTiles();
 
@@ -34,21 +91,34 @@ function populateGrid(gridTitleCountWidth, gridWidth) {
 
     let grid = document.getElementById("grid");
 
-    grid.style.width = gridWidth + 2*gridTitleCountWidth + 'px';
-    grid.style.height = gridWidth + 2*gridTitleCountWidth + 'px';
+    grid.style.width = gridWidth + 8*gridTitleCountWidth - (4*gridTitleCountWidth) + 'px';
+    grid.style.height = gridWidth + 8*gridTitleCountWidth - (4*gridTitleCountWidth) + 'px';
     grid.style.gridTemplateColumns = 'repeat('+gridTitleCountWidth+','+ gridWidth/gridTitleCountWidth+'px';
     grid.style.gridTemplateRows = 'repeat('+gridTitleCountWidth+','+ gridWidth/gridTitleCountWidth+'px';
 
-    for (let i = 0; i < gridTitleCountWidth * gridTitleCountWidth; i++) {
-        let temp = document.getElementsByTagName("template")[0];
-        let clon = temp.content.cloneNode(true);
+    for (let col = 0; col < gridTitleCountWidth; col++) {
+        let tempCol = document.createElement("div");
+        tempCol.style.height = gridWidth/gridTitleCountWidth + 'px';
+        tempCol.style.width = gridWidth/gridTitleCountWidth + 'px';
+        tempCol.classList.add("col");
+        let newCol = grid.appendChild(tempCol);
+        // console.log("Col ", newCol);
         
-        let tile = clon.querySelector(".tile")
-        tile.style.height = gridWidth/gridTitleCountWidth + 'px';
-        tile.style.width = gridWidth/gridTitleCountWidth + 'px';
-
-        grid.appendChild(clon);
+        for(let row = 0; row < gridTitleCountWidth; row++) {
+            let temp = document.getElementsByTagName("template")[0];
+            let clon = temp.content.cloneNode(true);
+            
+            let tile = clon.querySelector(".tile")
+            tile.style.height = gridWidth/gridTitleCountWidth + 'px';
+            tile.style.width = gridWidth/gridTitleCountWidth + 'px';
+            
+            let newTile = newCol.appendChild(tile);
+            // console.log("Tile ", newTile);
+            newTile.onclick = tileClicked;
+            newTile.oncontextmenu = tileFlagged;
+            
+            // console.log("Added grid tile.");
+        }
         
-        console.log("Added grid tile.");
     }
 }
