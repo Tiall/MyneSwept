@@ -1,7 +1,17 @@
 #grid {
-    display: grid;
-    gap: 2px;
     border: solid black 2px;
+    padding-left: 4px;
+    padding-top: 4px;
+}
+
+#grid, #grid div {
+    display: grid;
+    gap: 4px;
     /* grid-template-columns: repeat(5, 50px);
     grid-template-rows: 50px; */
+}
+
+.tile {
+    background-color: beige;
+    
 }
