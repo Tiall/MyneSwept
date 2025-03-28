@@ -12,6 +12,11 @@
 }
 
 .tile {
-    background-color: beige;
-    
+    background-color: #e3dab1;
+}
+
+.col .tile {
+    display:flex;
+    text-align: center;
+/*    justify-content: center;*/
 }
