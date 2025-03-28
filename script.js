@@ -1,3 +1,9 @@
+var bombCount = 10;
+
+var gameGrid = [[]];
+var flaggedCount = 0;
+
+
 function getGridElementsPosition(index) {
     const gridEl = document.getElementById("grid");
   
@@ -19,6 +25,9 @@ function getGridElementsPosition(index) {
 
 function onGenerateGame() {
     populateGrid(10, 500);
+    // placeBombs(bombCount);
+
+    bombText.innerText = bombCount - flaggedCount;
 }
 
 
@@ -33,45 +42,44 @@ function tileClicked(e) {
     let col = Array.from(cols).indexOf(this.parentNode);
     // console.log(Array.from(cols));
     
-    let currentRowNodes = this.parentNode.children
     // Above tile
-    if (currentRowNodes[row-1]) { // If the row above the selected space exists
-        currentRowNodes[row-1].style.backgroundColor = "Gray";
+    if (gameGrid[col][row-1]) { // If the row above the selected space exists
+        gameGrid[col][row-1].style.backgroundColor = "Gray";
 
         // Top left
-        if (cols[col-1]) {
+        if (gameGrid[col-1]) {
             cols[col-1].children[row-1].style.backgroundColor = "Gray";
         }
 
         // Top right
-        if (cols[col+1]) {
-            cols[col+1].children[row-1].style.backgroundColor = "Gray";
+        if (gameGrid[col-1]) {
+            gameGrid[col+1][row-1].style.backgroundColor = "Gray";
         }
     }
 
     // Below tile
-    if (currentRowNodes[row+1]) { // If the row below the selected space exists
-        currentRowNodes[row+1].style.backgroundColor = "Gray";
+    if (gameGrid[col][row+1]) { // If the row below the selected space exists
+        gameGrid[col][row+1].style.backgroundColor = "Gray";
         
         // Bottom left
-        if (cols[col-1]) {
-            cols[col-1].children[row+1].style.backgroundColor = "Gray";
+        if (gameGrid[col-1]) {
+            gameGrid[col-1][row+1].style.backgroundColor = "Gray";
         }
 
         // Bottom right
-        if (cols[col+1]) {
-            cols[col+1].children[row+1].style.backgroundColor = "Gray";
+        if (gameGrid[col+1]) {
+            gameGrid[col+1][row+1].style.backgroundColor = "Gray";
         }
     }
 
     // Left tile
-    if (cols[col-1]) { // If the col to the left of the selected space exists
-        cols[col-1].children[row].style.backgroundColor = "Gray";
+    if (gameGrid[col-1]) { // If the col to the left of the selected space exists
+        gameGrid[col-1][row].style.backgroundColor = "Gray";
     }
     
     // Right tile
-    if (cols[col+1]) { // If the col to the right of the selected space exists
-        cols[col+1].children[row].style.backgroundColor = "Gray";
+    if (gameGrid[col+1]) { // If the col to the right of the selected space exists
+        gameGrid[col+1][row].style.backgroundColor = "Gray";
     }
 
     this.style.backgroundColor = "Black";
@@ -103,7 +111,7 @@ function populateGrid(gridTitleCountWidth, gridWidth) {
         tempCol.classList.add("col");
         let newCol = grid.appendChild(tempCol);
         // console.log("Col ", newCol);
-        
+        gameGrid.push([]);
         for(let row = 0; row < gridTitleCountWidth; row++) {
             let temp = document.getElementsByTagName("template")[0];
             let clon = temp.content.cloneNode(true);
@@ -118,7 +126,24 @@ function populateGrid(gridTitleCountWidth, gridWidth) {
             newTile.oncontextmenu = tileFlagged;
             
             // console.log("Added grid tile.");
+            gameGrid[col][row] = {
+                "tile":newTile,
+                "isFlagged":false,
+                "isBomb":false
+            };
         }
         
+    }
+}
+
+function placeBombs(count) {
+    var placementCount = 0;
+    while (placementCount < bombCount) {
+        let col = Math.random() * gameGrid.length;
+        let row = Math.random() * gameGrid[col].length;
+
+        if (gameGrid[col][row]["isBomb"] == false) {
+            gameGrid[col][row]["isBomb"] = true;
+        }
     }
 }
