@@ -164,7 +164,7 @@ function tileFlagged(e) {
     flaggedCount += gameGrid[col][row]["isFlagged"] ? 1 : -1;
     bombText.innerText = bombCount - flaggedCount;
 
-    console.log("Tile Flagged ", gameGrid[col][row]);
+    //console.log("Tile Flagged ", gameGrid[col][row]);
 
     if (flaggedCount == bombCount) {
         for (let col of gameGrid) {
