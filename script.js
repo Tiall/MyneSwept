@@ -4,6 +4,7 @@ var gameGrid = [];
 var flaggedCount = 0;
 
 var isFirstPress = true;
+var isGameOver = false;
 
 function getGridElementsPosition(index) {
     const gridEl = document.getElementById("grid");
@@ -36,6 +37,7 @@ function resetGame() {
     gameGrid = [];
     flaggedCount = 0;
     isFirstPress = true;
+    isGameOver = false;
     document.getElementById("grid").textContent = '';
 }
 
@@ -46,6 +48,12 @@ function tileClicked(e) {
     clickTile(col, row);
 }
 function clickTile(col, row, isSearch = false) {
+    if (isGameOver) {
+        // If we already won, dont do anything
+        alert("Game already over, generate a new game to continue playing!");
+        return;
+    }
+
     if (gameGrid[col][row]["isFlagged"]) {
         // Do nothing
         return;
@@ -65,6 +73,7 @@ function clickTile(col, row, isSearch = false) {
         if (gameGrid[col][row]["isBomb"]) {
             gameGrid[col][row]["tile"].style.backgroundColor = "red";
             alert("BOMB : You Lose!");
+            isGameOver = true;
             return;
         }
 
@@ -149,6 +158,11 @@ function revealTile(gridTile) {
 }
 
 function tileFlagged(e) {
+    if (isGameOver) {
+        // If we already won, dont do anything
+        alert("Game already over, generate a new game to continue playing!");
+        return;
+    }
     e.preventDefault();
 
     let row = Array.from(this.parentNode.children).indexOf(this);
@@ -170,12 +184,11 @@ function tileFlagged(e) {
         for (let col of gameGrid) {
             for (let tile of col) {
                 if (tile["isBomb"] && !tile["isFlagged"]) {
-                    console.log(tile);
                     return;
                 }
             }
         }
-
+        isGameOver = true;
         alert("You Won!");
     }
 }
