@@ -26,8 +26,12 @@ function getGridElementsPosition(index) {
 }
 
 function onGenerateGame() {
-    populateGrid(10, 500);
-    placeBombs(bombCount);
+    let bombInput = document.getElementById("bombInput");
+    let sizeInput = document.getElementById("sizeInput");
+    let boardPxInput = document.getElementById("boardPxInput");
+    console.log(boardPxInput.value);
+    populateGrid(sizeInput.value, Number(boardPxInput.value));
+    placeBombs(bombInput.value);
 
     bombText.innerText = bombCount - flaggedCount;
 }
@@ -67,7 +71,7 @@ function clickTile(col, row, isSearch = false) {
         }
     }
 
-    if (!gameGrid[col][row]["isRevealed"] || isSearch) {
+    if (!gameGrid[col][row]["isRevealed"] || (isSearch && gameGrid[col][row]["surroundingBombs"] == 0)) {
         //gameGrid[row][col]["isClicked"] = true;
 
         if (gameGrid[col][row]["isBomb"]) {
@@ -141,6 +145,8 @@ function revealTile(gridTile) {
         //}
 
         gridTile["isRevealed"] = true;
+
+        // If the tile has no bombs around the clicked tile, we want to automatically reveal nearby empty tiles
         if (gridTile["surroundingBombs"] == 0) {
             gridTile["tile"].style.backgroundColor = "#f7f6ed";
             clickTile(gridTile["col"], gridTile["row"], true);
