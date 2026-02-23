@@ -63,15 +63,15 @@ function clickTile(col, row, isSearch = false) {
         return;
     }
     if (isFirstPress) {
-        isFirstPress = false;
-        if (gameGrid[col][row]["isBomb"]) {
+        while (gameGrid[col][row]["isBomb"]) {
             console.log("You got a bomb on the first click lol... *slow clap* ... I gotchu");
             onGenerateGame();
             clickTile(col, row);
         }
+        
     }
 
-    if (!gameGrid[col][row]["isRevealed"] || (isSearch && gameGrid[col][row]["surroundingBombs"] == 0)) {
+    if (!gameGrid[col][row]["isRevealed"] || isSearch) {
         //gameGrid[row][col]["isClicked"] = true;
 
         if (gameGrid[col][row]["isBomb"]) {
@@ -81,54 +81,60 @@ function clickTile(col, row, isSearch = false) {
             return;
         }
 
+        // If we click a tile with no bombs around it (or it's the first click), we want to automatically click nearby adjacent tiles
+        if (gameGrid[col][row]["surroundingBombs"] == 0 || isFirstPress && gameGrid[col][row]["surroundingBombs"] != 0) {
+            if (isFirstPress) {
+                isFirstPress = false;
+            }
+
+            // Above tile
+            if (gameGrid[col][row - 1] && !gameGrid[col][row - 1]["isBomb"]) { // If the row above the selected space exists
+                if (revealTile(gameGrid[col][row - 1]) != -1) {
+                    // Top left
+                    if (gameGrid[col - 1]) {
+                        revealTile(gameGrid[col - 1][row - 1]);
+
+                    }
+
+                    // Top right
+                    if (gameGrid[col + 1]) {
+                        revealTile(gameGrid[col + 1][row - 1]);
+
+                    }
+                }
+
+                
+            }
+
+            // Below tile
+            if (gameGrid[col][row + 1] && !gameGrid[col][row + 1]["isBomb"]) { // If the row below the selected space exists
+                if (revealTile(gameGrid[col][row + 1]) != -1) {
+                    // Bottom left
+                    if (gameGrid[col - 1]) {
+                        revealTile(gameGrid[col - 1][row + 1]);
+                    }
+
+                    // Bottom right
+                    if (gameGrid[col + 1]) {
+                        revealTile(gameGrid[col + 1][row + 1]);
+                    }
+                }
+            }
+
+            // Left tile
+            if (gameGrid[col - 1]) { // If the col to the left of the selected space exists
+                revealTile(gameGrid[col - 1][row]);
+            }
+
+            // Right tile
+            if (gameGrid[col + 1]) { // If the col to the right of the selected space exists
+                revealTile(gameGrid[col + 1][row]);
+            }
+
+
+            //console.log("Tile (", col, ",", row);
+        }
         revealTile(gameGrid[col][row]);
-
-        // Above tile
-        if (gameGrid[col][row - 1] && !gameGrid[col][row - 1]["isBomb"]) { // If the row above the selected space exists
-            if (revealTile(gameGrid[col][row - 1]) != -1) {
-                // Top left
-                if (gameGrid[col - 1]) {
-                    revealTile(gameGrid[col - 1][row - 1]);
-
-                }
-
-                // Top right
-                if (gameGrid[col + 1]) {
-                    revealTile(gameGrid[col + 1][row - 1]);
-
-                }
-            }
-
-            
-        }
-
-        // Below tile
-        if (gameGrid[col][row + 1] && !gameGrid[col][row + 1]["isBomb"]) { // If the row below the selected space exists
-            if (revealTile(gameGrid[col][row + 1]) != -1) {
-                // Bottom left
-                if (gameGrid[col - 1]) {
-                    revealTile(gameGrid[col - 1][row + 1]);
-                }
-
-                // Bottom right
-                if (gameGrid[col + 1]) {
-                    revealTile(gameGrid[col + 1][row + 1]);
-                }
-            }
-        }
-
-        // Left tile
-        if (gameGrid[col - 1]) { // If the col to the left of the selected space exists
-            revealTile(gameGrid[col - 1][row]);
-        }
-
-        // Right tile
-        if (gameGrid[col + 1]) { // If the col to the right of the selected space exists
-            revealTile(gameGrid[col + 1][row]);
-        }
-
-
-        //console.log("Tile (", col, ",", row);
     }
     else {
         console.log("failed click", gameGrid[col][row]);
